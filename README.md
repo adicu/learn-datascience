@@ -1,2 +1,2 @@
-CDSS Intro to Datascience DevFest 2017
+CDSS Intro to Datascience, DevFest 2017
 =======================
