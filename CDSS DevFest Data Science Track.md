@@ -1,9 +1,9 @@
 <a id="top"></a>
 # CDSS DevFest Data Science Track
 
-*A short introduction to machine learning in python covering data manipulation, visualization, and basic supervised & unsupervised algorithms.*
+*A short introduction to data science in python covering data manipulation, visualization, and basic supervised & unsupervised algorithms.*
 
-Written and developed by [Lucas Schuermann](http://lvs.io), [CDSS](http://cdssatcu.com) and [ADI](adicu.com).
+Written and developed by [Lucas Schuermann](http://lvs.io) with many more amazing individuals from [CDSS](http://cdssatcu.com) (Rachel Zhang, Zach Robertson, Jillian Knoll, Ashutosh Nanda).
 
 <a href="#top" class="top" id="table-of-contents">Top</a>
 ## Table of Contents
@@ -20,6 +20,10 @@ Written and developed by [Lucas Schuermann](http://lvs.io), [CDSS](http://cdssat
 	-	[2.4 Make a Bar Plot](#2.4)
 	-	[2.5 Make a Histogram](#2.5)
 -	[3.0 Training Models on Datasets](#3.0)
+	-	[3.1 Using scikit-learn](#3.1)
+	-	[3.2 Linear Regression](#3.2)
+	-	[3.3 Fitting Linear Regression Model with scikit-learn](#3.3)
+	-	[3.4 Training Data vs. Testing Data](#3.4)
 -	[4.0 Supervised Learning Problem](#4.0)
 	-	[4.1 Setup](#4.1)
 	-	[4.2 What is supervised learning?](#4.2)
@@ -33,7 +37,7 @@ Written and developed by [Lucas Schuermann](http://lvs.io), [CDSS](http://cdssat
 		-	[4.5.3 Evaluate the model](#4.5.3)
 	-	[4.6 Next steps: Different ways to play around with random forests](#4.6)
 	-	[4.7 Further resources](#4.7) 
--	[5.0 Training Models on Datasets](#5.0)
+-	[5.0 Unsupervised Learning Problem](#5.0)
 	-	[5.1 Setup](#5.1)
 	-	[5.2 What's Unsupervised Learning?](#5.2)
 	-	[5.3 Clustering](#5.3)
@@ -302,6 +306,150 @@ You can see that the vast majority of items fall within the cheapest bin, with a
 ___________
 <a href="#top" class="top" id="3.0">Top</a>
 ## 3.0 Training Models on Datasets
+
+So far, we've seen ways that we can load, explore, and visualize our data. These are the essential steps towards an exciting part of the data science process: modeling! We have to have an understanding of our data before getting to this stage, so now let's dive right in.
+
+<a id="3.1"></a>
+### 3.1 Using `scikit-learn`
+
+We will be using the `scikit-learn` package in order to perform _linear regression_ (more on what that is later). `scikit-learn` is awesome because it has a lot of common machine learning algorithms already built in and it streamlines the process of fitting models and evaluating them on new data. Let's load it up.
+
+```python
+import sklearn
+
+# to keep our notebook clean due to the use of some old features
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+While it seems pretty simple, we are well on our way to modeling our data: `scikit-learn` is an excellent library full of features that makes modeling data simple and interactive.
+
+<a id="3.2"></a>
+### 3.2 Linear Regression
+
+Let's just briefly go over what kind of model we're fitting. (We'll discuss what other kinds of modeling people usually do in the subsequent sections.) We're trying to predict a real-valued quantity, which gives the regression part of the name, and our model assumes that the output is a linear combination of the inputs, which gives the linear part of the name. For a little bit more math, we have a dataset of N points, and each data point is given by $\left(x^{(i)}_1, x^{(i)}_2, \dots x^{(i)}_d, y^{(i)}\right)$; in other words, each data point has $d$ features or inputs and 1 output. As we said earlier, $y^{(i)}$ is some number we're interested in predicting, so $y^{(i)} \in \mathbb{R}.$ The model structure then dictates that we will approximate $y^{(i)}$ in the following way: $$y^{(i)} \approx \beta_0 + \beta_1 x^{(i)}_1 + \beta_2 x^{(i)}_2 + \cdots + \beta_d x^{(i)}_d.$$ Cool, that's the most math we'll have to do today!
+
+Let's go ahead and produce our data: we'll keep it simple and make a problem with 1 predictor ($d = 1$) so that we can visualize our results. How will we produce our data? We'll essentially generate data assuming the model is true and add some noise; then, we'll recover the estimates of both $\beta_0$ and $\beta_1$, and our model should be pretty close. 
+
+We'll be using `numpy` to produce the data, but don't worry about following the entire process exactly; you usually won't be using simulated values when making models.
+
+```python
+# generating noisy test data using numpy for demonstration
+import numpy as np
+np.random.seed(0)
+
+num_data_points = 100
+xs = np.random.uniform(0, 10, num_data_points)           
+ys = 3 * xs + 7                                          
+noisy_ys = ys + np.random.normal(0, 5, num_data_points) 
+```
+
+Using our data visualization skills, let's see what these data look like.
+
+```python
+%matplotlib inline
+
+import matplotlib.pyplot as plt
+
+# creating a scatter plot
+plt.scatter(xs, noisy_ys)
+plt.title("Data")
+```
+
+Great, looks like a linear model will do decently well! Let's finish off the data preparation by converting everything into a `pandas` data frame.
+
+```python
+import pandas as pd
+
+# creating a new data frame from our generated data
+data = pd.DataFrame({'input' : xs, 'output' : noisy_ys})
+data.head()
+```
+
+<a id="3.3"></a>
+### 3.3 Fitting Linear Regression Model with `scikit-learn`
+
+We're ready to fit the linear model now! Let's do that using `scikit-learn`. 
+
+One of the reasons this package is so easy to use is that there is a standard process for how to fit models:
+
+    (1) Instantiate model type
+    (2) Fit the model using your data
+    (3) Evaluate it on new data
+    (4) ???
+    (5) Profit
+    
+Well, maybe not steps 4 and 5 necessarily, but definitely the first three! Let's follow these steps for linear regression.
+
+Here's step 1:
+
+```python
+from sklearn.linear_model import LinearRegression
+
+linear_regression_model = LinearRegression()
+```
+
+Here's step 2:
+
+(It's important to note that we're not including the `output` variable as part of the data; otherwise, we could always use that and have perfect prediction accuracy! Of course, when we evaluate future data, we won't have the same luxury of having the right answer ahead of time..)
+
+```python
+linear_regression_model.fit(data.drop('output', axis = 1), data.output)
+```
+
+Let's take a look at what `scikit-learn` did:
+
+```python
+print("Estimated Slope: %.3f (True Slope: 3)" % linear_regression_model.coef_)
+print("Estimated Intercept: %.3f (True Intercept: 7)" % linear_regression_model.intercept_)
+```
+
+Hey, not bad for our first stab at some modeling! Let's visualize our fit:
+
+```python
+# predicting values using our model
+evaluation_xs = np.linspace(0, 10)
+evaluation_predicted_ys = linear_regression_model.predict(pd.DataFrame({'input' : evaluation_xs}))
+
+# making a scatter plot
+plt.scatter(xs, noisy_ys)
+plt.plot(evaluation_xs, evaluation_predicted_ys, color = "red")
+plt.title("Visualizing Linear Model Fit")
+```
+
+(In order to visualize the model, we picked some points from $x = 0$ to $x = 50$ using `linspace`, evaluated the predicted output values at those points using the `predict` function, and then plotted the result.)
+
+Looks like we did pretty well!
+
+<a id="3.4"></a>
+### 3.4 Training Data vs. Testing Data
+
+There's something we slightly overlooked in our steps so far; we only have evaluated our model on the same set of points that we used to train our model. That's a little like our professors giving us sample questions ahead of time and then asking the exact same questions on the exam: while it may improve our grades, it won't really evaluate what we know! In the same fashion, we don't want to evaluate our model on just the data we have already seen; therefore, we usually split our data into a _testing_ and _training_ set. We will use the training set to fit our model and use the testing set to fairly evaluate our model performance because the data is "new" since the model didn't see it during the model fitting process. `scikit-learn` makes this super easy:
+
+```python
+from sklearn.cross_validation import train_test_split
+
+training_data, testing_data = train_test_split(data, test_size = 0.2)
+```
+
+Cool, now we can train on only the training set like we're supposed to:
+
+```python
+fixed_linear_regression_model = LinearRegression()
+fixed_linear_regression_model.fit(training_data.drop('output', axis = 1), training_data.output)
+```
+
+A typical way to evaluate how well we're doing is something called the coefficient of determination or $R^2$, which ranges from 0 to 1 with values closer to 1 being better; we can evaluate this on both the training and test set to see how they compare.
+
+```python
+training_data_score = fixed_linear_regression_model.score(training_data.drop('output', axis = 1), training_data.output)
+testing_data_score = fixed_linear_regression_model.score(testing_data.drop('output', axis = 1), testing_data.output)
+
+print "Coefficient of Determination for Training Data: %.3f" % training_data_score
+print "Coefficient of Determination for Test Data: %.3f" % testing_data_score
+```
+
+As we can see, our score on the training data is higher than our score on the testing data; this makes sense since we've seen the training data before. The key lesson to take away is that we should always evaluate our models on unseen data so that we don't trick ourselves into thinking we have a performant model when, in reality, we have just *overfit* the training data.
 
 ___________
 <a href="#top" class="top" id="4.0">Top</a>
