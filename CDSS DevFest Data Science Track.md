@@ -8,20 +8,52 @@ Written and developed by [Lucas Schuermann](http://lvs.io), [CDSS](http://cdssat
 <a href="#top" class="top" id="table-of-contents">Top</a>
 ## Table of Contents
 
--	[1.0 Section](#section)
-	-	[1.1 Subsection](#subsection)
--	[2.0 Another Section](#another-section)
-	-	[2.1 Another Subsection](#another-subsection)
--   [Additional Resources](#additionalresources)
+-	[0.0 Environment Setup](#0.0)
+	-	[0.A Using Conda](#0.A)
+	-	[0.B Without Conda](#0.B)
+	-	[0.1 Getting Started](#0.1)
+-	[1.0 Loading and Exploring Data](#1.0)
+-	[2.0 Basic Data Visualization with matplotlib](#2.0)
+	-	[2.1 Setup](#2.1)
+	-	[2.2 Import Data](#2.2)
+	-	[2.3 Make a Scatter Plot](#2.3)
+	-	[2.4 Make a Bar Plot](#2.4)
+	-	[2.5 Make a Histogram](#2.5)
+-	[3.0 Training Models on Datasets](#3.0)
+-	[4.0 Supervised Learning Problem](#4.0)
+	-	[4.1 Setup](#4.1)
+	-	[4.2 What is supervised learning?](#4.2)
+	-	[4.3.0 Introduction to random forest](#4.3.0)
+		-	[4.3.1 What's a decision tree?](#4.3.1)
+		-	[4.3.2 Lots of decision trees = Forest]($4.3.2)
+	-	[4.4 Random forest example](#4.4)
+	-	[4.5.0 Modeling time!](#4.5.0)
+		-	[4.5.1 Decide on the data you want, and split into training and test sets](#4.5.1)
+		-	[4.5.2 Train the random forest model](#4.5.2)
+		-	[4.5.3 Evaluate the model](#4.5.3)
+	-	[4.6 Next steps: Different ways to play around with random forests](#4.6)
+	-	[4.7 Further resources](#4.7) 
+-	[5.0 Training Models on Datasets](#5.0)
+	-	[5.1 Setup](#5.1)
+	-	[5.2 What's Unsupervised Learning?](#5.2)
+	-	[5.3 Clustering](#5.3)
+	-	[5.4 The k-means Algorithm](#5.4)
+	-	[5.5 Image Segmentation Example](#5.5)
+	-	[5.6.0 Limitations, Extensions and the basis of some assumptions used above](#5.6.0)
+		-	[5.6.1 What features should I use?](#5.6.1)
+		-	[5.6.2 Distance Metric](#5.6.2)
+		-	[5.6.3  I have too many features. How do I find the most relevant ones to cluster with?](#5.6.3)
+	-	[5.7 Other Clustering Algorithms](#5.7)
+	-	[5.8 Further reading](#5.8)
 
 
 ------------------------------
-<a href="#top" class="top" id="environment_setup">Top</a>
+<a href="#top" class="top" id="0.0">Top</a>
 ## 0.0 Environment Setup
 
 While some computers come with Python already installed, such as those running macOS, we will need a number of other Python tools (packages) in order to effectively manipulate, analyze, and visualize data. This guide will walk you through the easiest ways to set up your own data science environment, from installing python to running your first Jupyter notebook.
 
-<a id="using_conda"></a>
+<a id="0.A"></a>
 ### 0.A Using Conda
 
 We highly recommend that you download and use
@@ -68,7 +100,7 @@ dependencies:
 - seaborn=0.7.0
 ```
 
-<a id="without_conda"></a>
+<a id="0.B"></a>
 ### 0.B Without Conda
 
 We highly suggest using conda for easy package management. You should only be using python without conda if you do not have root access to your machine.
@@ -131,14 +163,11 @@ Hint: the download link for a zip folder can be found on the github project page
 <img src="files/Github Instructions.png">
 
 ___________
-<a href="#top" class="top" id="loading_data">Top</a>
+<a href="#top" class="top" id="1.0">Top</a>
 ## 1.0 Loading and Exploring Data
 
-<a id="another-subsection"></a>
-### 2.1 Another Subsection
-
 ___________
-<a href="#top" class="top" id="basic_visualization">Top</a>
+<a href="#top" class="top" id="2.0">Top</a>
 ## 2.0 Basic Data Visualization with matplotlib
 
 Data visualization is an important part of any data science project. Whether you use it to give yourself a better understanding of the data that you're about to work with or to make your conclusions more digestible for others, data visualization can add clarity in a way that sheer rows and columns of data cannot.
@@ -271,11 +300,11 @@ plt.hist(year_data, bins=[0, 5, 10, 15, 20, 25, 30])
 You can see that the vast majority of items fall within the cheapest bin, with a couple of outliers on the very expensive end.
 
 ___________
-<a href="#top" class="top" id="training_models">Top</a>
+<a href="#top" class="top" id="3.0">Top</a>
 ## 3.0 Training Models on Datasets
 
 ___________
-<a href="#top" class="top" id="supervised_learning">Top</a>
+<a href="#top" class="top" id="4.0">Top</a>
 ## 4.0 Supervised Learning Problem
 
 Supervised learning is a machine learning problem where you can train a model to use features to predict a target variable based on prior examples.  This contrasts with unsupervised learning (eg. clustering), in which the data contains many features but no apparent target variable.
@@ -339,8 +368,8 @@ Once the entire forest is created and ready to make predictions, the random fore
 - Prone to overfitting on noisy datasets
 - Cannot deal with features or target values that do not exist in the training data
 
-<a id="4.3"></a>
-### 4.3 Random forest example
+<a id="4.4"></a>
+### 4.4 Random forest example
 
 We're going to predict student alcohol consumption using a dataset about Portuguese students.  Take a moment to skim over the variables [here](http://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION).
 
@@ -420,8 +449,8 @@ rf_data['Dalc_mapped'] = rf_data['Dalc'].map(alc_mapping)
 rf_data['Walc_mapped'] = rf_data['Walc'].map(alc_mapping)
 ```
 
-<a id="4.4.0"></a>
-### 4.4.0 Modeling time!
+<a id="4.5.0"></a>
+### 4.5.0 Modeling time!
 
 Supervised learning involves these general steps:
 
@@ -431,8 +460,8 @@ Supervised learning involves these general steps:
     - As needed, iterate on the model to improve its performance (beware of overfitting!)
     - Look into the model to understand what it's doing, and gain some insight on your dataset.
 
-<a id="4.4.1"></a>
-#### 4.4.1 Decide on the data you want, and split into training and test sets
+<a id="4.5.1"></a>
+#### 4.5.1 Decide on the data you want, and split into training and test sets
 
 ```python
 # Specify the columns you want as features and as the target
@@ -456,8 +485,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
 X_train.shape, X_test.shape, y_train.shape, y_test.shape
 ```
 
-<a id="4.4.2"></a>
-#### 4.4.2 Train the random forest model
+<a id="4.5.2"></a>
+#### 4.5.2 Train the random forest model
 
 ```python
 # Initialize the random forest model with your desired parameters
@@ -466,8 +495,8 @@ rf_model = RandomForestClassifier(n_estimators = 100, random_state = 2017)
 rf_model = rf_model.fit(X_train, y_train)
 ```
 
-<a id="4.4.3"></a>
-#### 4.4.3 Evaluate the model
+<a id="4.5.3"></a>
+#### 4.5.3 Evaluate the model
 
 How well does the model perform?
 
@@ -525,8 +554,8 @@ pd.DataFrame({'feature': X.columns, 'importance': rf_model.feature_importances_}
 
 Intuitively, does it make sense that the top few features are most important in determining a student's alcohol level consumption?
 
-<a id="4.5"></a>
-### 4.5 Next steps: Different ways to play around with random forests
+<a id="4.6"></a>
+### 4.6 Next steps: Different ways to play around with random forests
 
 - Tweak the random forest initialization parameters: change the number of decision trees
 - Use a different set of features in X
@@ -537,15 +566,15 @@ Intuitively, does it make sense that the top few features are most important in 
     - Out-of-bag estimate is the error rate of the random forest model on the training data that is not included in the bootstrap sample of each tree.  Oob error has been shown to be a good measure of error for random forest models.
     - When initializing `RandomForestClassifier`, set `oob_score = True`
 
-<a id="4.6"></a>
-### 4.6 Further resources
+<a id="4.7"></a>
+### 4.7 Further resources
 
 - Another random forest tutorial: [Random Forests in Python](http://blog.yhat.com/posts/random-forests-in-python.html)
 - [Would You Survive the Titanic? A Guide to Machine Learning in Python](https://blog.socialcops.com/engineering/machine-learning-python/)
 - [Supervised learning with scikit-learn](http://scikit-learn.org/stable/supervised_learning.html)
 
 ___________
-<a href="#top" class="top" id="unsupervised_learning">Top</a>
+<a href="#top" class="top" id="5.0">Top</a>
 ## 5.0 Unsupervised Learning: k-Means Clustering
 
 We hope you enjoy the tutorial! Before we start diving into the material, let's make sure that you have your environment up and running. Simply run the code below -- if things break, you can install the dependencies using pip or conda.
@@ -732,7 +761,7 @@ Try running the code again with a different image, or with a different value of 
 <a id="5.6.0"></a>
 ### 5.6.0 Limitations, Extensions and the basis of some assumptions used above
 
-#### I. Choosing the Right K
+#### Choosing the Right K
 In the first toy example, we started with k = 3 centroids. If you're wondering how we arrived at this magic number and why, read on. 
 
 > ##### (a) Known number of centroids (Relatively Easy)
@@ -754,7 +783,7 @@ Unfortunately, there’s no easy way to determine the optimal value of k. It’s
 * In the tutorial above, we try to classify each point into one of K clusters. But sometimes, maybe you are clustering based on a feature that is not so exclusive. For example, people usually enjoy more than one genre of music, or food. It would be pretty difficult to form a clustering system such that a person can be a fan of ice-cream or a fan of tiramisu but not both. Hence when we need to "share" members of clusters, we can use **probabilistic clustering** or **fuzzy clustering**.
 
 <a id="5.6.1"></a>
-#### What features should I use? 
+#### 5.6.1 What features should I use? 
 
 If you are still getting questionable results, then the features on which you are trying to cluster may not be good indicators. Consider, for example, a clustering algorithm which clusters people into economic categories based on how many Buzzfeed quizzes they take per week. While you may get a clustering, you know that Buzzfeed quizzes are not empirical indicators of earning potential (personal opinions may differ). The motto is: **garbage metrics will give you garbage clusters**. 
 
