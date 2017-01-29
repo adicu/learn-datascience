@@ -1,2 +1,1 @@
-CDSS Intro to Datascience, DevFest 2017
-=======================
+https://github.com/cerrno/intro-to-datascience
