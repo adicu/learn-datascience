@@ -13,6 +13,10 @@ Written and developed by [Lucas Schuermann](http://lvs.io) with many more amazin
 	-	[0.B Without Conda](#0.B)
 	-	[0.1 Getting Started](#0.1)
 -	[1.0 Loading and Exploring Data](#1.0)
+	-	[1.1 Obtaining Data](#1.1)
+	-	[1.2 CSV Format](#1.2)
+	-	[1.3 Importing Data into Python](#1.3)
+	-	[1.4 Handling Missing Values](#1.4)
 -	[2.0 Basic Data Visualization with matplotlib](#2.0)
 	-	[2.1 Setup](#2.1)
 	-	[2.2 Import Data](#2.2)
@@ -169,6 +173,221 @@ Hint: the download link for a zip folder can be found on the github project page
 ___________
 <a href="#top" class="top" id="1.0">Top</a>
 ## 1.0 Loading and Exploring Data
+
+It's time to dive into the world of data science! With the growing collection of data in many different fields, data science has become an important tool in unlocking business value, developing a better understanding of situations, and solving problems in a principled fashion. We hope you come to enjoy and continue on to explore data science through this track. 
+
+This track will gently acquaint you with how people get started with a data problem; in particular, we will cover obtaining data, how data is usually stored, getting data into usable form in Python, doing exploratory work, and correcting for missing or unrecorded values.
+
+<a id="1.1"></a>
+### 1.1 Obtaining Data
+
+Before starting to work on a data problem, we need to actually get some data to analyze! Sometimes, this will be given to you directly, but often times, you'll have to go look for data that matches the problem you want to analyze. The good news is that there are an ever growing number of datasets you can find on the Internet! One of our favorite type of sources is government open data, which has information on all kinds of things that you both can and can't imagine. For the purpose of this level, we'll be using information on NYC Green Taxi trips during January 2016. You can find more information on this dataset [here](http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml), and the actual data comes from [this link](https://s3.amazonaws.com/nyc-tlc/trip+data/green_tripdata_2016-01.csv). For your convenience, it's already in the `datasets` folder as `green_tripdata_2016-01.csv.zip`. You might find it helpful to go through [this data dictionary](http://www.nyc.gov/html/tlc/downloads/pdf/data_dictionary_trip_records_green.pdf) later if there are columns that don't make sense to you.
+
+Please note that many datasets, including those bundled with the curriculum for use in this section, come as compressed (usually zip) files. In the `datasets` folder, please unzip `green_tripdata_2016-01.csv.zip` to `green_tripdata_2016-01.csv` using your favorite tool.
+
+<a id="1.2"></a>
+### 1.2 CSV Format
+
+Let's now understand how this data is stored; while there are other formats such as JSON, CSV, or comma-separated values, files are one of the most common file formats for data scientists. We'll look at a toy example about fake Columbia library traffic to familiarize ourselves:
+
+```
+date,library,number_students
+1-16-2017,butler,0
+1-16-2017,noco,0
+1-16-2017,watson,0
+1-17-2017,butler,100
+1-17-2017,noco,55
+1-17-2017,watson,67
+1-18-2017,butler,110
+1-18-2017,noco,48
+1-18-2017,watson,78
+1-19-2017,butler,35
+1-19-2017,noco,24
+1-19-2017,watson,18
+```
+
+The first thing to take note of is that all the different values are separated by commas: hence the name CSV. Another thing to notice is that the column names are given in the first row. The last important thing to note about CSV files is that each row is on its own line. There's not much more to CSV files than these few points, and their convenience makes them a file format of choice for data scientists.
+
+<a id="1.3"></a>
+### 1.3 Importing Data into Python
+
+Now that we understand some of the basics of the data, let's try playing around with it in Python. One typical way to work with datasets is using `pandas`, which is a package which makes it easy to manipulate data stored in tabular form or as `pandas` more succintly says: dataframes. Let's load up `pandas`.
+
+```python
+import pandas as pd
+```
+
+It's also usually useful to have `numpy` around, and we'll use it later on.
+
+```python
+import numpy as np
+```
+
+Let's now load our dataset using the `read_csv` function; it does pretty much exactly what the name implies: read data from a CSV and return the resulting dataframe.
+
+```python
+taxi_data = pd.read_csv("datasets/green_tripdata_2016-01.csv")
+```
+
+Great, we now have our data in Python. Let's start to explore it; the first thing we should check out is how much data we have in terms of the number of rows and columns.
+
+```python
+number_rows = len(taxi_data.index)
+number_columns = len(taxi_data.columns)
+print("Number of rows: %d" % number_rows)
+print("Number of columns: %d" % number_columns)
+```
+
+Wowza! 1.4 million rows or so, guess we're dealing with big data. :) Another interesting thing to check out is what kinds of columns are included in the dataset: we can do this by checking out the `columns` attribute.
+
+```python
+print(taxi_data.columns)
+```
+
+There's a lot we can learn from just the columns that are stored: for example, we can get information like when the trip started and ended, where the trip started and ended, whether the people tipped, and how much the fare was.
+
+We can also investigate what types of data the columns have.
+
+```python
+taxi_data.dtypes
+```
+
+Oops, looks like `pandas` isn't recognizing the times as such because it just labels it as `object`, which usually means string. Let's do that conversion.
+
+```python
+taxi_data.lpep_pickup_datetime = pd.to_datetime(taxi_data.lpep_pickup_datetime)
+taxi_data.Lpep_dropoff_datetime = pd.to_datetime(taxi_data.Lpep_dropoff_datetime)
+taxi_data.dtypes
+```
+
+Ah, much better. Now that we have some idea of what we'll be looking at, let's look at a few examples of trips. We'll do this using the `head` function, which will show us the first 5 rows. 
+
+(Note that you could do `print(taxi_data.head())`, but the HTML table formatting that Jupyter lets us do looks much cleaner. To use the automatic formatting, just have the call to `head` be the last thing in your cell.)
+
+```python
+taxi_data.head()
+```
+
+We could also just as easily look at the last 5 rows with the `tail` function.
+
+```python
+taxi_data.tail()
+```
+
+It seems like we have a lot of columns, so some of the columns are getting cut off; we can easily subset to have less columns by using indexing.
+
+```python
+location_information = taxi_data[["Pickup_longitude", "Pickup_latitude", "Dropoff_longitude", "Dropoff_latitude", "Trip_distance"]]
+location_information.head()
+```
+
+We can also look at any arbitrary set of rows in a similar way.
+
+```python
+taxi_data[2014:2018]
+```
+
+Besides extracting sets of columns, we can also get a single column by just using its name (assuming it has no spaces or special characters); here's an example:
+
+```python
+distances = taxi_data.Trip_distance
+distances[:5]
+```
+
+We can also perform common summary operations very easily using `pandas`; for example, let's have it summarize the column representing the total amount.
+
+```python
+taxi_data.Total_amount.describe()
+```
+
+Something should stand out like a sore thumb: some trip cost negative ~500 dollars! To simplify our dataset, let's just get rid of all the trips that had nonpositive total amount using conditional indexing where each row is kept or not based on a boolean condition.
+
+```python
+sensible_trips = taxi_data[taxi_data.Total_amount > 0]
+print("New number of rows: %d" % len(sensible_trips.index))
+print("Percentage of trips with negative total amount: %.2f%%" % \
+      (100 * (1.0 - float(len(sensible_trips.index)) / len(taxi_data.index))))
+```
+
+Thank goodness that most of our trips don't have this weird behavior.
+
+Let's try to make a new column looking at what percentage of the total fare was from the trip; this is easy to do in `pandas`.
+
+```python
+sensible_trips.tip_percentage = sensible_trips.Tip_amount / sensible_trips.Total_amount
+sensible_trips.tip_percentage.describe()
+```
+
+From this simple calculation, we can say that a tip isn't given in over half of rides since the median value is 0; that's pretty weird, but it's cool that we were able to discover that with just a few `pandas` operations!
+
+We can also do pretty cool statistics using the `groupby` function; essentially, it lets you specify groups of rows based on a variable, and then we can do statistics on each group. This lets us do things like explore whether the tip amount is related to the number of people who were in the car.
+
+```python
+means = sensible_trips.tip_percentage.groupby(sensible_trips.Passenger_count).mean()
+stds = sensible_trips.tip_percentage.groupby(sensible_trips.Passenger_count).std()
+pd.DataFrame({'mean' : means, 'std. dev.' : stds})
+```
+
+That's awkward... There were some rides where 0 people were in the taxi! Anyhow, there doesn't seem to be a whole lot of difference in the mean across different passenger counts given the variation in those values (as indicated by the standard deviation).
+
+<a id="1.4"></a>
+### 1.4 Handling Missing Values
+
+Our taxi data was super nice in many ways: among them, it had didn't have any missing values. In this next part, we'll explore what to do if we do have missing values in our data. Missing values can come up for any number of reasons such as sensor failure or a value not being applicable for a particular row; traditionally, they are represented as a special character such as `?` or `NA` in a CSV file though sometimes the value could just be blank. It's often a good practice to look at a CSV if you suspect it has missing values to see what the convention is as there is no standard.
+
+To get a CSV with missing values, we'll be using a different dataset the [Air Quality](http://archive.ics.uci.edu/ml/datasets/Air+Quality) dataset from the [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/index.html). These datasets come in handy when you need any suitable set of data to practice your machine learning rather than explore through data science. In order to practice obtaining external datasets, please download and unzip `AirQualityUCI.csv` to our `datasets` folder, using the link provided above.
+
+```python
+air_quality_data = pd.read_csv("datasets/AirQualityUCI.csv", sep = ";")
+air_quality_data.head()
+```
+
+The first thing that should jump out is those unnamed columns at the end, let's dig deeper. We'll use the `isnan` function from `numpy` to check if there are any real values in the column and the `all` function also from `numpy` to quickly tell us if all the values are junk.
+
+```python
+all_nan_15 = np.all(np.isnan(air_quality_data["Unnamed: 15"].values))
+all_nan_16 = np.all(np.isnan(air_quality_data["Unnamed: 16"].values))
+print("All Garbage in 15? %s" % all_nan_15)
+print("All Garbage in 16? %s" % all_nan_16)
+```
+
+Since all the values are not usable, let's go ahead and drop those columns using the `drop` function. Note that it's best practice to define a new dataframe without those columns rather than deleting them from the original dataframe because running your code twice would fail (you can't delete them again after having deleted them once). Also, the `axis = 1` just means drop a column rather than drop a row.
+
+```python
+clean_air_quality_data = air_quality_data.drop(["Unnamed: 15", "Unnamed: 16"], axis = 1)
+clean_air_quality_data.head()
+```
+
+Okay, now let's go looking for those missing values. We'll use the `isnull` function from `pandas`, which would produce a new data frame where every value has been replaced by whether it's junk or not. We can then summarize it by using the `sum` function, which by default does column sums.
+
+```python
+clean_air_quality_data.isnull().sum()
+```
+
+Interesting, it isn't the case that a certain variable is missing more than others, so a good guess would be that 114 rows have no values for each column. Let's check out a few.
+
+```python
+clean_air_quality_data[clean_air_quality_data.Date.isnull()].head()
+```
+
+Just as we had suspected! (Note that we had to check the assumption that the missing values were just located in the same 114 rows.) We'll try two different approaches to fixing this issue: getting rid of the problematic rows and imputing (read: replacing, imputing is just fancy talk in the business) the missing values with the previous non-missing value. The second is a good strategy since this is time-series data, but if the observations were unconnected, we might use the mean of the column instead.
+
+First up is getting rid of the problematic rows.
+
+```python
+strictly_clean_air_quality_data = clean_air_quality_data[np.logical_not(clean_air_quality_data.Date.isnull())]
+print(strictly_clean_air_quality_data.isnull().sum())
+strictly_clean_air_quality_data.head()
+```
+
+Awesome! Let's try the other way now. `pandas` makes it super easy for us.
+
+```python
+imputed_air_quality_data = clean_air_quality_data.fillna(method = "ffill")
+imputed_air_quality_data[9355:9360]
+```
+
+This seems to be doing okay since the previously missing rows now take the values from row with index number 9356, but of course, we could always do better. For example, the `Date` column probably should still increment! `pandas` provides us a few interpolation options that would account for things like this, but you should always make sure that it's doing something sensible by checking known missing value cases!
 
 ___________
 <a href="#top" class="top" id="2.0">Top</a>
