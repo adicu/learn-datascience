@@ -3,6 +3,8 @@
 
 *A short introduction to data science in python covering data manipulation, visualization, and basic supervised & unsupervised algorithms.*
 
+Note that this track differs from other DevFest tracks in that you will not be working towards one specific goal, but rather you will learn a specific skill per section, each (roughly) increasing in complexity. By the end of this curriculum, you will have the skills and tools necessary to tackle your own data science problems!
+
 Written and developed by [Lucas Schuermann](http://lvs.io) with many more amazing individuals from [CDSS](http://cdssatcu.com) (Rachel Zhang, Zach Robertson, Jillian Knoll, Ashutosh Nanda).
 
 <a href="#top" class="top" id="table-of-contents">Top</a>
@@ -389,6 +391,9 @@ imputed_air_quality_data[9355:9360]
 
 This seems to be doing okay since the previously missing rows now take the values from row with index number 9356, but of course, we could always do better. For example, the `Date` column probably should still increment! `pandas` provides us a few interpolation options that would account for things like this, but you should always make sure that it's doing something sensible by checking known missing value cases!
 
+##### Check your results
+The python notebook for this lesson is titled `1. Loading and Exploring Data`, and is available [here](https://github.com/cerrno/intro-to-datascience).
+
 ___________
 <a href="#top" class="top" id="2.0">Top</a>
 ## 2.0 Basic Data Visualization with matplotlib
@@ -521,6 +526,9 @@ plt.hist(year_data, bins=[0, 5, 10, 15, 20, 25, 30])
 ```
 
 You can see that the vast majority of items fall within the cheapest bin, with a couple of outliers on the very expensive end.
+
+##### Check your results
+The python notebook for this lesson is titled `2. Basic Data Visualization`, and is available [here](https://github.com/cerrno/intro-to-datascience).
 
 ___________
 <a href="#top" class="top" id="3.0">Top</a>
@@ -669,6 +677,9 @@ print "Coefficient of Determination for Test Data: %.3f" % testing_data_score
 ```
 
 As we can see, our score on the training data is higher than our score on the testing data; this makes sense since we've seen the training data before. The key lesson to take away is that we should always evaluate our models on unseen data so that we don't trick ourselves into thinking we have a performant model when, in reality, we have just *overfit* the training data.
+
+##### Check your results
+The python notebook for this lesson is titled `3. Training Models on Datasets`, and is available [here](https://github.com/cerrno/intro-to-datascience).
 
 ___________
 <a href="#top" class="top" id="4.0">Top</a>
@@ -940,6 +951,9 @@ Intuitively, does it make sense that the top few features are most important in 
 - [Would You Survive the Titanic? A Guide to Machine Learning in Python](https://blog.socialcops.com/engineering/machine-learning-python/)
 - [Supervised learning with scikit-learn](http://scikit-learn.org/stable/supervised_learning.html)
 
+##### Check your results
+The python notebook for this lesson is titled `4. Supervised Learning`, and is available [here](https://github.com/cerrno/intro-to-datascience).
+
 ___________
 <a href="#top" class="top" id="5.0">Top</a>
 ## 5.0 Unsupervised Learning: k-Means Clustering
@@ -1184,6 +1198,9 @@ For hierarchical clustering, there’s no need to worry about the best number of
 
 > #### (b) Expectation-Maximization (EM)
 EM is *the generalized* clustering algorithm. It views the data as a mixture of different distributions, and tries to find what those distributions are accordingly. It’s a **probabilistic clustering method**, though, in that it doesn’t assign each data point to a fixed cluster. Instead, it determines the probabilities with which each point belongs to each cluster. For example, it may find that a point belongs to cluster 1 with probability 0.95, and cluster 2 with probability 0.05. It iteratively estimates the cluster assignment probabilities and computes the distributional parameters for each cluster.
+
+##### Check your results
+The python notebook for this lesson is titled `5. Unsupervised Learning`, and is available [here](https://github.com/cerrno/intro-to-datascience).
 
 <a id="5.8"></a>
 ### 5.8 Further reading
